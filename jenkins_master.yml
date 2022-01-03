@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  tasks:
+  - name: Read Terraform State File
+    ansible.builtin.slurp:
+      src: ~/jenkins-infra/terraform.tfstate
+    register: statefile
+
+  - name: Set statefile contents to variable
+    ansible.builtin.set_fact:
+      statefile_json: "{{ statefile.content | b64decode }}"
+
+  - name: Set Jenkins Server Public IP to variable
+    ansible.builtin.set_fact:
+      jenkins_server_ip: "{{ statefile_json | json_query(public_ip_query) }}"
+    vars:
+      public_ip_query: "resources[0].instances[?name==jenkins_server].attributes.public_ip"
+
+  - name: Print
+    debug:
+      var: jenkins_server_ip
+
+  - name: Add Jenkins Server Public IP to in-memory Ansible Inventory
+    ansible.builtin.add_host:
+      name: "{{ jenkins_server_ip[0] }}"
+      groups: jenkins_server
+
+
+
