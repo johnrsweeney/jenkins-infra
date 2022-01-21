@@ -24,6 +24,83 @@
     ansible.builtin.add_host:
       name: "{{ jenkins_server_ip[0] }}"
       groups: jenkins_server
+      ansible_user: centos
+      ansible_ssh_private_key_file: "{{ jenkins_server_ssh_key }}"
 
+- hosts: jenkins_server
+  become: true
+  tasks:
+  - name: Install yum-utils
+    dnf:
+      name: yum-utils
+      state: installed
 
+  - name: Overlay ext4 filesystem on Jenkins data device
+    community.general.filesystem:
+      dev: /dev/xvdb
+      fstype: ext4
+
+  - name: Mount EBS Volume for Jenkins data
+    ansible.posix.mount:
+      path: /mnt/jenkins
+      src: /dev/xvdb
+      fstype: ext4
+      state: mounted
+
+  - name: Add docker-ce repository
+    ansible.builtin.get_url:
+      url: https://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/docker-ce.repo
+
+  - name: Install Docker Engine
+    ansible.builtin.dnf:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      state: installed
+
+  - name: Add {{ ansible_user }} to docker group
+    ansible.builtin.user:
+      name: "{{ ansible_user }}"
+      groups: docker
+      append: true
+
+  - name: Give directory ownership to Docker group
+    ansible.builtin.file:
+      path: /mnt/jenkins/
+      owner: "{{ ansible_user }}"
+      group: docker
+      recurse: true
+
+  - name: Start Docker Service
+    systemd:
+      name: docker
+      state: started
+
+  - name: Install python3
+    dnf:
+      name: python3
+      state: installed
+
+  - name: Install Docker SDK python module
+    ansible.builtin.pip:
+      name: docker
+      state: present
+
+  - name: Create bridge network in Docker named 'jenkins'
+    community.docker.docker_network:
+      name: jenkins
+
+  - name: Start Jenkins Docker Container
+    community.docker.docker_container:
+      name: jenkins_master
+      image: jenkins/jenkins:lts-jdk11
+      state: started
+      detach: true
+      ports:
+        - "80:8080"
+        - "50000:50000"
+      volumes:
+        - "/mnt/jenkins:/var/jenkins_home"
 
