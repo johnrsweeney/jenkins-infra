@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  tasks:
+  - name: Install Hashicorp Stable Repository
+    become: true
+    get_url:
+      url: https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+      dest: /etc/yum.repos.d/hasicorp.repo
+
+  - name: Install Hashicorp Terraform
+    become: true
+    ansible.builtin.dnf:
+      name: terraform
+      state: installed
