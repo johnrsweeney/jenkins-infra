@@ -16,19 +16,11 @@
     vars:
       public_ip_query: "resources[0].instances[?name==jenkins_server].attributes.public_ip"
 
-  - name: Print
-    debug:
-      var: jenkins_server_ip
-
-  - name: Add Jenkins Server Public IP to in-memory Ansible Inventory
-    ansible.builtin.add_host:
-      name: "{{ jenkins_server_ip[0] }}"
-      groups: jenkins_server
-      ansible_user: centos
-      ansible_ssh_private_key_file: "{{ jenkins_server_ssh_key }}"
-
 - hosts: jenkins_server
   become: true
+  vars:
+    ansible_user: centos
+    ansible_ssh_private_key_file: "{{ jenkins_ssh_key }}"
   tasks:
   - name: Install yum-utils
     dnf:
