@@ -19,7 +19,7 @@ resource "aws_instance" "jenkins_agent" {
 
 resource "local_file" "jenkins_inventory" {
   filename        = "${path.module}/jenkins_inventory"
-  file_permission = "0444"
+  file_permission = "0644"
   content         = templatefile("${path.module}/jenkins_inventory.tftpl",
                           {
                             jenkins_server_ip = "${aws_instance.jenkins_server.public_ip}",
