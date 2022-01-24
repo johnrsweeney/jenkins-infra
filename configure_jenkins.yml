@@ -96,3 +96,76 @@
       volumes:
         - "/mnt/jenkins:/var/jenkins_home"
 
+- hosts: jenkins_agent
+  become: true
+  vars:
+    ansible_user: centos
+    ansible_ssh_private_key_file: "{{ jenkins_ssh_key }}"
+  tasks:
+  - name: Install openJDK & git
+    package:
+      name:
+        - java-11-openjdk-devel
+        - git
+      state: installed
+
+  - name: Create jenkins user
+    ansible.builtin.user:
+      name: jenkins
+      create_home: true
+      home: /var/jenkins_home/
+
+  - name: Create .ssh directory for jenkins user
+    ansible.builtin.file:
+      path: /var/jenkins_home/.ssh
+      state: directory
+
+  - name: Generate OpenSSH keypair
+    community.crypto.openssh_keypair:
+      path: /var/jenkins_home/.ssh/ssh_id_rsa
+      owner: jenkins
+      group: jenkins
+    register: jenkins_keypair
+
+  - name: debug
+    ansible.builtin.debug:
+      var: jenkins_keypair
+
+  - name: Add public key to authorized_keys for jenkins user
+    ansible.builtin.lineinfile:
+      path: /var/jenkins_home/.ssh/authorized_keys  #"{{ jenkins_keypair.filename }}/authorized_keys"
+      line: "{{ jenkins_keypair.public_key }}"
+      create: true
+      owner: jenkins
+      group: jenkins
+
+  - name: Add docker-ce repository
+    ansible.builtin.get_url:
+      url: https://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/docker-ce.repo
+
+  - name: Install Docker Engine
+    ansible.builtin.dnf:
+      name:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+      state: installed
+
+  - name: Add {{ ansible_user }} to docker group
+    ansible.builtin.user:
+      name: "{{ ansible_user }}"
+      groups: docker
+      append: true
+
+  - name: Give directory ownership to Docker group
+    ansible.builtin.file:
+      path: /mnt/jenkins/
+      owner: "{{ ansible_user }}"
+      group: docker
+      recurse: true
+
+  - name: Start Docker Service
+    systemd:
+      name: docker
+      state: started
