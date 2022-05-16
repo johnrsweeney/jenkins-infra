@@ -8,6 +8,7 @@
       state: present
 
   - name: Install Hashicorp Stable Repository
+    become: true
     ansible.builtin.apt_repository:
       repo: deb [arch=amd64] https://apt.releases.hashicorp.com stable main
 
