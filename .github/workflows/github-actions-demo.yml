@@ -19,5 +19,5 @@ jobs:
   BootStrap-Control-Node:
     runs-on: ubuntu-latest
     steps:
-      - run: ./bootstrap_ansible.sh
+      - run: ./bootstrap_control_node/ubuntu-bootstrap_ansible.sh
       - run: ansible-playbook bootstrap_control_node.yml
