@@ -19,5 +19,9 @@ jobs:
   BootStrap-Control-Node:
     runs-on: ubuntu-latest
     steps:
+      - run: ls -la
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: ls -la
       - run: ./bootstrap_control_node/ubuntu-bootstrap_ansible.sh
       - run: ansible-playbook bootstrap_control_node.yml
