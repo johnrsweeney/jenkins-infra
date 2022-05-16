@@ -9,6 +9,6 @@
 
   - name: Install Hashicorp Terraform
     become: true
-    ansible.builtin.dnf:
+    ansible.builtin.package:
       name: terraform
       state: installed
