@@ -15,3 +15,9 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "the job's status is ${{ job.status }}"
+
+  BootStrap-Control-Node:
+    runs-on: centos-latest
+    steps:
+      - run: ./bootstrap_ansible.sh
+      - run: ansible-playbook bootstrap_control_node.yml
