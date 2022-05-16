@@ -24,4 +24,4 @@ jobs:
         uses: actions/checkout@v3
       - run: ls -la
       - run: ./bootstrap_control_node/ubuntu-bootstrap_ansible.sh
-      - run: ansible-playbook bootstrap_control_node.yml
+      - run: ansible-playbook ./bootstrap_control_node/bootstrap_control_node.yml
