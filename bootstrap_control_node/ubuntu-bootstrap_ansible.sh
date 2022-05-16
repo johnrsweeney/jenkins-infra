@@ -5,6 +5,7 @@
 #udo dnf install -y terraform
 
 #udo dnf install -y epel-release
+set -e
 sudo apt install -y ansible
 
 ansible-galaxy collection install community.docker ansible.posix community.general community.crypto
