@@ -20,4 +20,4 @@
     become: true
     ansible.builtin.package:
       name: terraform
-      state: installed
+      state: present
