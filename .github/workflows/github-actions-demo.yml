@@ -27,6 +27,7 @@ jobs:
       - run: ansible-playbook ./bootstrap_control_node/bootstrap_control_node.yml
 
   Terraform-Apply:
+    needs: BootStrap-Control-Node
     runs-on: ubuntu-latest
     steps:
       - run: terraform plan
