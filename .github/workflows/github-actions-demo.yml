@@ -1,4 +1,4 @@
-name: GitHub GitHub Actions demo
+name: Jenkins Infrastructure Deploy
 on: push
 jobs:
   Exp-GH-Actions:
