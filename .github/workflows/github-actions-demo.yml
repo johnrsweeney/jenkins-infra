@@ -1,0 +1,35 @@
+name: GitHub GitHub Actions demo
+on: push
+jobs:
+  Exp-GH-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Job triggered by a ${{ github.event_name }} event"
+      - run: echo "Job now running on a ${{ runner.os }} server"
+      - run: echo "The name of this branch is ${{ github.ref }} and this repo is ${{ github.repository }}"
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: echo "The ${{ github.repository }} has been cloned to the runner"
+      - run: echo "The workflow is ready to test your code on the runner"
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - run: echo "the job's status is ${{ job.status }}"
+
+  BootStrap-Control-Node:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ls -la
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: ls -la
+      - run: ./bootstrap_control_node/ubuntu-bootstrap_ansible.sh
+      - run: ansible-playbook ./bootstrap_control_node/bootstrap_control_node.yml
+
+  Terraform-Apply:
+    needs: BootStrap-Control-Node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: terraform init
