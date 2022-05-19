@@ -29,12 +29,17 @@ jobs:
   Terraform-Apply:
     needs: BootStrap-Control-Node
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: terraform init
-      - run: echo "{{ secrets.DUMMY }}"
+      - run: echo "$DUMMY"
+        env:
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          DUMMY: ${{ secrets.DUMMY }}
       - run: terraform plan -var "aws_access_key=$AWS_ACCESS_KEY" -var "aws_secret_key=$AWS_SECRET_KEY"
+        env:
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
+          DUMMY: ${{ secrets.DUMMY }}
