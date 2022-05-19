@@ -29,6 +29,9 @@ jobs:
   Terraform-Apply:
     needs: BootStrap-Control-Node
     runs-on: ubuntu-latest
+    env:
+      aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+      aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
