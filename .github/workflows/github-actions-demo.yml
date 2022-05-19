@@ -1,5 +1,5 @@
 name: Jenkins Infrastructure Deploy
-on: push
+on: [push, workflow_dispatch]
 jobs:
   Exp-GH-Actions:
     runs-on: ubuntu-latest
