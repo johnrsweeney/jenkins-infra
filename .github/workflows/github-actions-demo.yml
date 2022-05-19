@@ -36,4 +36,4 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - run: terraform init
-      - run: terraform plan -var "aws_access_kay=$AWS_ACCESS_KEY" -var "aws_secret_key=$AWS_SECRET_KEY"
+      - run: terraform plan -var "aws_access_key=$AWS_ACCESS_KEY" -var "aws_secret_key=$AWS_SECRET_KEY"
